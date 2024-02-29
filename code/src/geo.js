@@ -342,6 +342,138 @@ const geo = {
     };
   },
 };
+minecraftBlock: () => {
+    const blockWidth = 1;
+    const blockHeightMap = [
+      [0, 2, 0],
+      [1, 1, 2],
+      [0, 1, 3],
+    ];
+
+    const vertices = [];
+    const uvsTop = [];
+    const uvsSide = [];
+    const indices = [];
+
+    for (let x = 0; x < blockHeightMap.length; x++) {
+      for (let z = 0; z < blockHeightMap[x].length; z++) {
+        const height = blockHeightMap[x][z];
+
+        const startX = x * blockWidth;
+        const startZ = z * blockWidth;
+
+        // Create top face vertices and UVs
+        for (let y = 0; y < height; y++) {
+          const startY = y * blockWidth;
+          vertices.push(
+            startX, startY, startZ,
+            startX + blockWidth, startY, startZ,
+            startX + blockWidth, startY, startZ + blockWidth,
+            startX, startY, startZ + blockWidth
+          );
+
+          // Use different UVs for top face based on whether the block is covered or not
+          if (y === 0) {
+            uvsTop.push(
+              0, 0,
+              1, 0,
+              1, 1,
+              0, 1
+            );
+          } else {
+            uvsTop.push(
+              0, 0,
+              0, 0,
+              0, 0,
+              0, 0
+            );
+          }
+        }
+
+        // Create side faces vertices and UVs
+        for (let y = 0; y < height; y++) {
+          const startY = y * blockWidth;
+
+          // Side face on the left
+          vertices.push(
+            startX, startY, startZ,
+            startX, startY, startZ + blockWidth,
+            startX, startY + blockWidth, startZ + blockWidth,
+            startX, startY + blockWidth, startZ
+          );
+          uvsSide.push(
+            0, 0,
+            1, 0,
+            1, 1,
+            0, 1
+          );
+
+          // Side face on the right (only if it's not the last block in the row)
+          if (z < blockHeightMap[x].length - 1) {
+            vertices.push(
+              startX + blockWidth, startY, startZ,
+              startX + blockWidth, startY, startZ + blockWidth,
+              startX + blockWidth, startY + blockWidth, startZ + blockWidth,
+              startX + blockWidth, startY + blockWidth, startZ
+            );
+            uvsSide.push(
+              0, 0,
+              1, 0,
+              1, 1,
+              0, 1
+            );
+          }
+
+          // Side face at the front (only if it's not the last row)
+          if (x < blockHeightMap.length - 1) {
+            vertices.push(
+              startX, startY, startZ,
+              startX + blockWidth, startY, startZ,
+              startX + blockWidth, startY + blockWidth, startZ,
+              startX, startY + blockWidth, startZ
+            );
+            uvsSide.push(
+              0, 0,
+              1, 0,
+              1, 1,
+              0, 1
+            );
+          }
+
+          // Side face at the back (only if it's not the first row)
+          if (x > 0) {
+            vertices.push(
+              startX, startY, startZ + blockWidth,
+              startX + blockWidth, startY, startZ + blockWidth,
+              startX + blockWidth, startY + blockWidth, startZ + blockWidth,
+              startX, startY + blockWidth, startZ + blockWidth
+            );
+            uvsSide.push(
+              0, 0,
+              1, 0,
+              1, 1,
+              0, 1
+            );
+          }
+        }
+      }
+    }
+
+    // Combine top and side UVs
+    const uvs = [...uvsTop, ...uvsSide];
+
+    // Create indices
+    for (let i = 0; i < vertices.length / 3; i += 4) {
+      indices.push(i, i + 1, i + 2, i, i + 2, i + 3);
+    }
+
+    return {
+      vertices,
+      uvs,
+      indices,
+    };
+  },
+};
 
 const subdivide = ({
   vertices,
