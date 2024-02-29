@@ -1,4 +1,3 @@
-
 import geo from "./geo.js";
 import { create } from "./node.js";
 import { loadShader } from "./shaders.js";
@@ -9,9 +8,9 @@ let gl;
 
 const { mat4, vec3, quat } = glMatrix;
 const clearColor = {
-  r: 25/255,
-  g: 25/255,
-  b: 25/255,
+  r: 25 / 255,
+  g: 25 / 255,
+  b: 25 / 255,
 };
 const programs = {};
 const scene = [];
@@ -39,32 +38,26 @@ window.init = async (canvas) => {
       { key: 'diffuse', name: 'aTextureCoord' },
     ],
   });
-  //scene.push(plane);
+  // scene.push(plane);
 
-  const cube = create(gl, {
+  const minecraftBlock = create(gl, {
     program: programs.default,
-    ...geo.cubeComplex(),
-    rotation: quat.fromEuler(quat.create(), 45, 45, 0),
-    scale: vec3.fromValues(0.5, 0.5, 0.5),
+    ...geo.minecraftBlock(),
+    rotation: quat.fromEuler(quat.create(), 0, 0, 0),
+    scale: vec3.fromValues(1, 1, 1),
     attributes: [
       { key: 'diffuse', name: 'aTextureCoord' },
     ],
-    update: (dt) => {
-      const speed = 0.0001;
-      const { rotation, } = cube;
-      quat.rotateX(rotation, rotation, dt * speed);
-      quat.rotateY(rotation, rotation, dt * speed * speed);
-    },
   });
-  scene.push(cube);
+  scene.push(minecraftBlock);
 
   const texture = await loadTextureAsync(gl,
-  {
-    path: 'assets/texture.png',
-  });
+    {
+      path: 'assets/texture.png',
+    });
   console.log('Loaded!');
 
-  cube.textures.diffuse = texture;
+  minecraftBlock.textures.diffuse = texture;
   plane.textures.diffuse = texture;
 };
 
