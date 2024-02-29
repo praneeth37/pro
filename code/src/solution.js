@@ -51,6 +51,23 @@ window.init = async (canvas) => {
   });
   scene.push(minecraftBlock);
 
+  const cube = create(gl, {
+    program: programs.default,
+    ...geo.cubeComplex(),
+    rotation: quat.fromEuler(quat.create(), 45, 45, 0),
+    scale: vec3.fromValues(0.5, 0.5, 0.5),
+    attributes: [
+      { key: 'diffuse', name: 'aTextureCoord' },
+    ],
+    update: (dt) => {
+      const speed = 0.0001;
+      const { rotation, } = cube;
+      quat.rotateX(rotation, rotation, dt * speed);
+      quat.rotateY(rotation, rotation, dt * speed * speed);
+    },
+  });
+  scene.push(cube);
+  
   const texture = await loadTextureAsync(gl,
     {
       path: 'assets/texture.png',
